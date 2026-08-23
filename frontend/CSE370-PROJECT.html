@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>Welcome, <span id="studentName"></span>!</h1>
+  <button id="logoutBtn">Logout</button>
+</div>
+
+<script>
+document.getElementById("studentName").textContent = localStorage.getItem("studentName") || "Student";
+
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await fetch("http://localhost:5000/api/logout", {
+    method: "POST",
+    credentials: "include",
+  });
+  localStorage.removeItem("studentName");
+  window.location.href = "index.html";
+});
+</script>
+</body>
+</html>

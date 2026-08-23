@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-logo">🚗 Carpool App</div>
+  <button id="logoutBtn" class="logout-btn">Logout</button>
+</nav>
+
+<div class="search-section">
+  <div class="search-bar">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="Where to?">
+    <button type="button" id="searchBtn">Search</button>
+  </div>
+</div>
+
+<div class="dashboard-content">
+  <h1>Welcome, <span id="studentName"></span>!</h1>
+  <div id="ridesList" class="rides-list"></div>
+
+  <section class="features">
+    <div class="feature-card">
+      <div class="feature-icon">🔍</div>
+      <h3>Find a Ride</h3>
+      <p>Search active ride groups heading your way and join instantly.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🚗</div>
+      <h3>Post a Ride</h3>
+      <p>Have a vehicle? Create a ride group and set your route, time, and seats.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⭐</div>
+      <h3>Rate & Review</h3>
+      <p>Build trust with credibility scores based on real rider feedback.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+document.getElementById("studentName").textContent = localStorage.getItem("studentName") || "Student";
+
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await fetch("http://localhost:5000/api/logout", {
+    method: "POST",
+    credentials: "include",
+  });
+  localStorage.removeItem("studentName");
+  window.location.href = "index.html";
+});
+
+async function loadRides() {
+  const searchValue = document.querySelector(".search-bar input").value.trim();
+  const url = searchValue
+    ? `http://localhost:5000/api/rides?destination=${encodeURIComponent(searchValue)}`
+    : "http://localhost:5000/api/rides";
+
+  try {
+    const res = await fetch(url);
+    const rides = await res.json();
+    const container = document.getElementById("ridesList");
+    container.innerHTML = "";
+
+    if (rides.length === 0) {
+      container.innerHTML = "<p>No matching rides found.</p>";
+      return;
+    }
+
+    rides.forEach((ride) => {
+      const card = document.createElement("div");
+      card.className = "ride-card";
+      const time = new Date(ride.departure_time).toLocaleString();
+      card.innerHTML = `
+        <p><strong>BRAC University → ${ride.destination}</strong></p>
+        <p><strong>Host:</strong> ${ride.host_name}</p>
+        <p><strong>Departure:</strong> ${time}</p>
+        <p><strong>Seats available:</strong> ${ride.seats_available}</p>
+        <p><strong>Fare:</strong> ${ride.total_fare ? "৳" + ride.total_fare : "Not set"}</p>
+      `;
+      container.appendChild(card);
+    });
+  } catch (err) {
+    console.error("Failed to load rides:", err);
+  }
+}
+
+document.getElementById("searchBtn").addEventListener("click", loadRides);
+</script>
+</body>
+</html>
