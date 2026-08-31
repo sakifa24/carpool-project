@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Carpool - Student Ride Sharing & Matching System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon"><i class="fa-solid fa-car-side"></i></div>
+        <div class="brand-text">
+          <h1>Campus<span>Carpool</span></h1>
+          <span class="badge-tag">Student Ride Sharing</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Quick Switch Demo Account Bar -->
+        <div class="demo-switch-wrapper">
+          <label for="demoUserSelect"><i class="fa-solid fa-user-gear"></i> Quick Switch User:</label>
+          <select id="demoUserSelect" class="select-input">
+            <option value="">Loading students...</option>
+          </select>
+        </div>
+
+        <!-- User Profile Pill -->
+        <div id="userProfilePill" class="user-pill hidden">
+          <div class="user-avatar" id="headerAvatar">A</div>
+          <div class="user-info">
+            <div class="user-name" id="headerUserName">Student Name</div>
+            <div class="user-score" id="headerCredScore"><i class="fa-solid fa-star"></i> 5.00</div>
+          </div>
+          <button id="btnLogout" class="btn-icon" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+
+        <button id="btnLoginModal" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In / Register</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Banner -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Main App Layout -->
+  <main class="app-main">
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs-bar">
+      <div class="nav-tabs-container">
+        <button class="nav-tab active" data-tab="search-tab">
+          <i class="fa-solid fa-magnifying-glass"></i> Find Rides
+        </button>
+        <button class="nav-tab" data-tab="match-tab">
+          <i class="fa-solid fa-bolt-lightning"></i> AUTO Matching
+        </button>
+        <button class="nav-tab" data-tab="host-tab">
+          <i class="fa-solid fa-plus-circle"></i> Host a Ride
+        </button>
+        <button class="nav-tab" data-tab="myrides-tab">
+          <i class="fa-solid fa-clock-rotate-left"></i> My Rides & History
+          <span id="pendingBadge" class="badge-count hidden">0</span>
+        </button>
+        <button class="nav-tab" data-tab="chat-tab">
+          <i class="fa-solid fa-comments"></i> Group Chat
+          <span id="chatBadge" class="badge-dot hidden"></span>
+        </button>
+        <button class="nav-tab" data-tab="fare-tab">
+          <i class="fa-solid fa-calculator"></i> Split Calculator
+        </button>
+        <button class="nav-tab" data-tab="reviews-tab">
+          <i class="fa-solid fa-star-half-stroke"></i> Reviews & Ratings
+        </button>
+      </div>
+    </nav>
+
+    <!-- Tab Contents -->
+    <div class="tab-content-wrapper">
+
+      <!-- TAB 1: FIND RIDES & SEARCH -->
+      <section id="search-tab" class="tab-pane active">
+        <div class="search-hero">
+          <div class="search-hero-content">
+            <h2>Find Fellow Students Going Your Way</h2>
+            <p>Split fares, travel safely in university groups, and cut down your daily commute cost.</p>
+          </div>
+
+          <!-- The Search Bar -->
+          <div class="search-card">
+            <form id="searchRidesForm" class="search-form-grid">
+              <div class="form-group">
+                <label><i class="fa-solid fa-location-dot"></i> Destination (Where to?)</label>
+                <input type="text" id="searchDestination" class="form-control" placeholder="e.g. Dhanmondi, Gulshan, Uttara, Banani..." />
+              </div>
+
+              <div class="form-group">
+                <label><i class="fa-solid fa-location-crosshairs"></i> Pickup Point</label>
+                <input type="text" id="searchPickup" class="form-control" placeholder="e.g. BRAC University, Gate 1..." value="BRAC University" />
+              </div>
+
+              <div class="form-group">
+                <label><i class="fa-solid fa-taxi"></i> Vehicle Type</label>
+                <select id="searchVehicleType" class="form-control">
+                  <option value="all">All Vehicles (Auto, CNG, Car)</option>
+                  <option value="auto">Auto Rickshaw</option>
+                  <option value="cng">CNG Auto</option>
+                  <option value="car">Sedan Car</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label><i class="fa-solid fa-calendar-day"></i> Date (Optional)</label>
+                <input type="date" id="searchDate" class="form-control" />
+              </div>
+
+              <div class="form-action-group">
+                <button type="submit" id="btnSearchSubmit" class="btn btn-primary btn-block">
+                  <i class="fa-solid fa-magnifying-glass"></i> Search Rides
+                </button>
+                <button type="button" id="btnResetSearch" class="btn btn-outline" title="Reset Filters">
+                  <i class="fa-solid fa-rotate-left"></i>
+                </button>
+              </div>
+            </form>
+
+            <!-- Quick Destination Tags -->
+            <div class="quick-tags">
+              <span>Popular:</span>
+              <button class="tag-btn" data-dest="Dhanmondi">Dhanmondi</button>
+              <button class="tag-btn" data-dest="Gulshan">Gulshan</button>
+              <button class="tag-btn" data-dest="Uttara">Uttara</button>
+              <button class="tag-btn" data-dest="Banani">Banani</button>
+              <button class="tag-btn" data-dest="Mirpur">Mirpur</button>
+              <button class="tag-btn" data-dest="Bashundhara">Bashundhara</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Results Stream -->
+        <div class="results-header">
+          <h3 id="resultsTitle">Available Rides (<span id="resultsCount">0</span>)</h3>
+          <div class="filter-sort-indicator" id="filterSummary">Showing all open campus rides</div>
+        </div>
+
+        <div id="ridesGrid" class="rides-grid">
+          <!-- Ride cards injected here dynamically -->
+        </div>
+      </section>
+
+
+      <!-- TAB 2: AUTO MATCHING ENGINE -->
+      <section id="match-tab" class="tab-pane">
+        <div class="section-intro">
+          <div class="intro-badge"><i class="fa-solid fa-bolt"></i> Smart Match Engine</div>
+          <h2>Instant Route & Co-Rider Auto Matching</h2>
+          <p>Don't want to search manually? Enter your destination and let the system find compatible rides or fellow students traveling the same route to create a new split group!</p>
+        </div>
+
+        <div class="match-grid-layout">
+          <!-- Input Form -->
+          <div class="card match-input-card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-sliders"></i> Your Travel Preferences</h3>
+            </div>
+            <div class="card-body">
+              <form id="autoMatchForm">
+                <div class="form-group">
+                  <label>Destination Location *</label>
+                  <input type="text" id="matchDestination" class="form-control" placeholder="e.g. Dhanmondi, Banani, Uttara" required />
+                </div>
+                <div class="form-group">
+                  <label>Pickup Location</label>
+                  <input type="text" id="matchPickup" class="form-control" value="BRAC University" />
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-6">
+                    <label>Preferred Vehicle</label>
+                    <select id="matchVehicle" class="form-control">
+                      <option value="any">Any (Auto, CNG, or Car)</option>
+                      <option value="auto">Auto Rickshaw</option>
+                      <option value="cng">CNG Auto</option>
+                      <option value="car">Sedan Car</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-6">
+                    <label>Desired Time</label>
+                    <input type="datetime-local" id="matchTime" class="form-control" />
+                  </div>
+                </div>
+
+                <div class="form-check-group">
+                  <input type="checkbox" id="saveMatchRequest" checked />
+                  <label for="saveMatchRequest">If no immediate ride exists, keep my request active to alert incoming hosts.</label>
+                </div>
+
+                <button type="submit" id="btnRunMatch" class="btn btn-primary btn-block">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Run AUTO Match Engine
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Matching Engine Results -->
+          <div class="match-results-container">
+            <div id="matchResultsPlaceholder" class="empty-placeholder">
+              <i class="fa-solid fa-route placeholder-icon"></i>
+              <h4>Ready to Match</h4>
+              <p>Enter your destination on the left and click "Run AUTO Match Engine" to find open rides and student pool matches.</p>
+            </div>
+
+            <div id="matchResultsContent" class="hidden">
+              <div class="results-sub-header">
+                <h4><i class="fa-solid fa-car"></i> Recommended Direct Rides</h4>
+              </div>
+              <div id="autoMatchedRides" class="match-cards-list"></div>
+
+              <div class="results-sub-header mt-4">
+                <h4><i class="fa-solid fa-users"></i> Compatible Student Co-Riders (Same Route)</h4>
+              </div>
+              <div id="autoMatchedCoRiders" class="match-cards-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- TAB 3: HOST A RIDE -->
+      <section id="host-tab" class="tab-pane">
+        <div class="section-intro">
+          <div class="intro-badge"><i class="fa-solid fa-car-on"></i> Share Your Ride</div>
+          <h2>Offer a Ride & Split the Travel Cost</h2>
+          <p>Taking an Auto, CNG, or Car from campus? Post your ride group, pick up fellow students, and drastically reduce your trip fare.</p>
+        </div>
+
+        <div class="host-container-grid">
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-plus-circle"></i> Create New Ride Group</h3>
+            </div>
+            <div class="card-body">
+              <form id="createRideForm">
+                <div class="form-row">
+                  <div class="form-group col-6">
+                    <label>Pickup Location *</label>
+                    <input type="text" id="hostPickup" class="form-control" value="BRAC University" required />
+                  </div>
+                  <div class="form-group col-6">
+                    <label>Destination / Dropoff *</label>
+                    <input type="text" id="hostDropoff" class="form-control" placeholder="e.g. Dhanmondi, Gulshan, Uttara" required />
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group col-4">
+                    <label>Vehicle Type *</label>
+                    <select id="hostVehicleSelect" class="form-control" required>
+                      <option value="1">Auto Rickshaw (3 Seats)</option>
+                      <option value="2" selected>CNG Auto (3 Seats)</option>
+                      <option value="3">Sedan Car (4 Seats)</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-4">
+                    <label>Max Capacity *</label>
+                    <input type="number" id="hostCapacity" class="form-control" value="3" min="1" max="6" required />
+                  </div>
+                  <div class="form-group col-4">
+                    <label>Total Fare (BDT) *</label>
+                    <input type="number" id="hostTotalFare" class="form-control" placeholder="e.g. 240" min="10" required />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label>Departure Date & Time *</label>
+                  <input type="datetime-local" id="hostDepartureTime" class="form-control" required />
+                </div>
+
+                <div class="form-group">
+                  <label>Ride Notes / Instructions (Optional)</label>
+                  <textarea id="hostNotes" class="form-control" rows="2" placeholder="e.g. Meeting point at main gate. Will leave right on time!"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                  <i class="fa-solid fa-paper-plane"></i> Publish Ride Group
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Live Split Preview Box -->
+          <div class="card split-preview-card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-calculator"></i> Estimated Fare Split</h3>
+            </div>
+            <div class="card-body">
+              <div class="split-display">
+                <div class="split-item">
+                  <span class="label">Total Fare</span>
+                  <span class="val" id="previewTotalFare">৳0.00</span>
+                </div>
+                <div class="split-item highlight">
+                  <span class="label">If 2 Persons Share:</span>
+                  <span class="val" id="preview2Split">৳0.00 / person</span>
+                </div>
+                <div class="split-item highlight-green">
+                  <span class="label">If Full Capacity (<span id="previewCap">3</span> people):</span>
+                  <span class="val" id="previewFullSplit">৳0.00 / person</span>
+                </div>
+              </div>
+
+              <div class="info-alert mt-4">
+                <i class="fa-solid fa-shield-halved"></i>
+                <p>A dedicated <strong>Group Chat Room</strong> will automatically be created for your ride. You can approve or reject incoming student requests in your dashboard.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- TAB 4: MY RIDES & HISTORY -->
+      <section id="myrides-tab" class="tab-pane">
+        <div class="section-intro">
+          <h2>My Rides & Booking Management</h2>
+          <p>Track your active rides, review pending join requests, access ride group chats, and view your ride history.</p>
+        </div>
+
+        <div class="myrides-layout">
+          <!-- Hosted Rides Section -->
+          <div class="rides-category-block">
+            <div class="category-title">
+              <h3><i class="fa-solid fa-bullhorn"></i> Rides Hosted by Me</h3>
+              <span class="badge-tag" id="hostedCount">0 Rides</span>
+            </div>
+            <div id="hostedRidesList" class="myrides-grid"></div>
+          </div>
+
+          <!-- Joined Rides Section -->
+          <div class="rides-category-block mt-4">
+            <div class="category-title">
+              <h3><i class="fa-solid fa-user-group"></i> Rides I Have Joined</h3>
+              <span class="badge-tag" id="joinedCount">0 Rides</span>
+            </div>
+            <div id="joinedRidesList" class="myrides-grid"></div>
+          </div>
+
+          <!-- Sent Pending Requests Section -->
+          <div class="rides-category-block mt-4">
+            <div class="category-title">
+              <h3><i class="fa-solid fa-hourglass-half"></i> Pending Requests Sent</h3>
+              <span class="badge-tag" id="pendingRequestsCount">0 Pending</span>
+            </div>
+            <div id="pendingRequestsList" class="myrides-grid"></div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- TAB 5: IN-APP GROUP CHAT -->
+      <section id="chat-tab" class="tab-pane">
+        <div class="chat-system-container">
+          <!-- Rooms Sidebar -->
+          <div class="chat-sidebar">
+            <div class="sidebar-header">
+              <h3><i class="fa-solid fa-comments"></i> Ride Chats</h3>
+            </div>
+            <div id="chatRoomsList" class="chat-rooms-list">
+              <!-- Chat room tabs -->
+            </div>
+          </div>
+
+          <!-- Active Chat Window -->
+          <div class="chat-window">
+            <div id="chatHeader" class="chat-window-header">
+              <div class="chat-header-info">
+                <h4 id="chatRoomTitle">Select a Ride Group Chat</h4>
+                <p id="chatRoomSubtitle">Communicate with co-riders in real-time</p>
+              </div>
+              <div id="chatParticipantsPills" class="participants-pills"></div>
+            </div>
+
+            <div id="chatMessagesStream" class="chat-messages-stream">
+              <div class="empty-chat-placeholder">
+                <i class="fa-regular fa-comment-dots"></i>
+                <p>Select an active ride from the left sidebar to open the group conversation.</p>
+              </div>
+            </div>
+
+            <form id="chatInputForm" class="chat-input-form hidden">
+              <input type="text" id="chatMessageInput" placeholder="Type a message to your carpool group..." autocomplete="off" required />
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Send</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- TAB 6: FARE SPLIT CALCULATOR -->
+      <section id="fare-tab" class="tab-pane">
+        <div class="section-intro">
+          <div class="intro-badge"><i class="fa-solid fa-calculator"></i> Fair Share</div>
+          <h2>Interactive Fare Split Calculator</h2>
+          <p>Estimate your travel budget, simulate cost per person across different vehicle types, and discover how much you save by carpooling.</p>
+        </div>
+
+        <div class="calc-grid-layout">
+          <!-- Calculator Controls -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-sliders"></i> Split Simulator</h3>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label>Total Fare (BDT): <strong id="calcFareDisplay">৳240</strong></label>
+                <input type="range" id="calcFareSlider" min="50" max="600" step="10" value="240" class="range-slider" />
+                <div class="slider-ticks">
+                  <span>৳50</span>
+                  <span>৳200</span>
+                  <span>৳400</span>
+                  <span>৳600</span>
+                </div>
+              </div>
+
+              <div class="form-row mt-3">
+                <div class="form-group col-6">
+                  <label>Vehicle Type</label>
+                  <select id="calcVehicleSelect" class="form-control">
+                    <option value="auto">Auto Rickshaw (Max 3)</option>
+                    <option value="cng" selected>CNG Auto (Max 3)</option>
+                    <option value="car">Sedan Car (Max 4)</option>
+                  </select>
+                </div>
+
+                <div class="form-group col-6">
+                  <label>Number of Passengers</label>
+                  <div class="passenger-selector" id="passengerSelector">
+                    <button type="button" class="btn-pax" data-pax="1">1</button>
+                    <button type="button" class="btn-pax" data-pax="2">2</button>
+                    <button type="button" class="btn-pax active" data-pax="3">3</button>
+                    <button type="button" class="btn-pax" data-pax="4">4</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Output Highlight Card -->
+              <div class="savings-highlight-box mt-3">
+                <div class="box-row">
+                  <span>Cost Per Passenger:</span>
+                  <strong class="highlight-val" id="calcPerPersonVal">৳80.00</strong>
+                </div>
+                <div class="box-row">
+                  <span>Solo Ride Cost:</span>
+                  <span id="calcSoloVal">৳240.00</span>
+                </div>
+                <div class="box-row highlight-green">
+                  <span>You Save Per Person:</span>
+                  <strong id="calcSavingsVal">৳160.00 (66.7% OFF)</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Split Breakdown Table & Campus Benchmarks -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-table-list"></i> Full Passenger Tier Breakdown</h3>
+            </div>
+            <div class="card-body">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Passengers</th>
+                    <th>Fare / Person</th>
+                    <th>Money Saved</th>
+                    <th>Discount</th>
+                  </tr>
+                </thead>
+                <tbody id="splitTiersBody">
+                  <!-- Dynamic Tiers -->
+                </tbody>
+              </table>
+
+              <h4 class="mt-4 mb-2"><i class="fa-solid fa-map-pin"></i> Standard Campus Commute Benchmarks</h4>
+              <div id="routeEstimatesContainer" class="route-estimates-grid">
+                <!-- Estimates -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- TAB 7: REVIEWS & RATINGS -->
+      <section id="reviews-tab" class="tab-pane">
+        <div class="section-intro">
+          <div class="intro-badge"><i class="fa-solid fa-award"></i> Credibility & Trust</div>
+          <h2>Student Credibility & Rating System</h2>
+          <p>Every student maintains a credibility score based on punctuality, safe driving, and cooperative behavior on shared rides.</p>
+        </div>
+
+        <div class="reviews-grid-layout">
+          <!-- Profile Card -->
+          <div class="card profile-card">
+            <div class="profile-header">
+              <div class="profile-avatar" id="profAvatar">A</div>
+              <h3 id="profName">Student Name</h3>
+              <p id="profEmail">email@bracu.ac.bd</p>
+              <div class="credibility-badge">
+                <i class="fa-solid fa-star"></i>
+                <span id="profScore">5.00</span> / 5.00 Credibility
+              </div>
+            </div>
+
+            <div class="profile-stats">
+              <div class="stat-box">
+                <span class="num" id="profHosted">0</span>
+                <span class="lbl">Rides Hosted</span>
+              </div>
+              <div class="stat-box">
+                <span class="num" id="profJoined">0</span>
+                <span class="lbl">Rides Joined</span>
+              </div>
+              <div class="stat-box">
+                <span class="num" id="profReviewsCount">0</span>
+                <span class="lbl">Reviews</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Received Reviews List -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-comment-dots"></i> Feedback Received from Co-Riders</h3>
+            </div>
+            <div class="card-body">
+              <div id="reviewsList" class="reviews-list">
+                <!-- Review cards -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- MODAL: Auth (Sign In / Register) -->
+  <div id="authModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="authModalTitle">Student Sign In</h3>
+        <button class="btn-close" id="btnCloseAuthModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Tab Switcher -->
+        <div class="auth-tabs">
+          <button id="tabSignIn" class="auth-tab active">Sign In</button>
+          <button id="tabRegister" class="auth-tab">Register</button>
+        </div>
+
+        <!-- Sign In Form -->
+        <form id="signInForm" class="auth-form active">
+          <div class="form-group">
+            <label>Student Email</label>
+            <input type="email" id="loginEmail" class="form-control" placeholder="e.g. aisha@bracu.ac.bd" required />
+          </div>
+          <div class="form-group">
+            <label>Password (Default: password123)</label>
+            <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="auth-form hidden">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="regName" class="form-control" placeholder="e.g. Tanzim Ahmed" required />
+          </div>
+          <div class="form-group">
+            <label>University ID</label>
+            <input type="text" id="regUid" class="form-control" placeholder="e.g. 2026111" required />
+          </div>
+          <div class="form-group">
+            <label>University Email</label>
+            <input type="email" id="regEmail" class="form-control" placeholder="e.g. tanzim@bracu.ac.bd" required />
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="regPhone" class="form-control" placeholder="e.g. 01710000099" />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="regPassword" class="form-control" placeholder="Minimum 6 characters" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Join Request Drawer -->
+  <div id="joinModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Request to Join Ride</h3>
+        <button class="btn-close" id="btnCloseJoinModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="joinRideSummary" class="ride-summary-pill mb-3"></div>
+        <form id="submitJoinRequestForm">
+          <input type="hidden" id="joinRideGroupId" />
+          <div class="form-group">
+            <label>Your Pickup Point</label>
+            <input type="text" id="joinPickupPoint" class="form-control" value="BRAC University Gate 1" required />
+          </div>
+          <div class="form-group">
+            <label>Your Dropoff Point</label>
+            <input type="text" id="joinDropoffPoint" class="form-control" placeholder="e.g. Dhanmondi 27 / Shimanto Square" required />
+          </div>
+          <div class="info-alert mb-3">
+            <p>Estimated Split Fare: <strong id="joinEstFare">৳0.00</strong></p>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Confirm Join Request</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Leave Review Modal -->
+  <div id="reviewModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Submit Rating & Review</h3>
+        <button class="btn-close" id="btnCloseReviewModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="submitReviewForm">
+          <input type="hidden" id="reviewRideGroupId" />
+          <input type="hidden" id="revieweeStudentId" />
+          <p>Rating student: <strong id="revieweeName">Student</strong></p>
+
+          <div class="form-group mt-3">
+            <label>Rating (1 to 5 Stars):</label>
+            <div class="star-rating-select" id="starRatingSelect">
+              <i class="fa-solid fa-star star-opt active" data-val="1"></i>
+              <i class="fa-solid fa-star star-opt active" data-val="2"></i>
+              <i class="fa-solid fa-star star-opt active" data-val="3"></i>
+              <i class="fa-solid fa-star star-opt active" data-val="4"></i>
+              <i class="fa-solid fa-star star-opt active" data-val="5"></i>
+            </div>
+            <input type="hidden" id="ratingPointVal" value="5" />
+          </div>
+
+          <div class="form-group">
+            <label>Comment / Feedback</label>
+            <textarea id="reviewComment" class="form-control" rows="3" placeholder="Share your experience (punctuality, friendliness, driving)..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Submit Review</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Host Requests Drawer -->
+  <div id="hostRequestsModal" class="modal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3>Pending Join Requests for Your Ride</h3>
+        <button class="btn-close" id="btnCloseHostReqModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="hostRequestsList" class="host-requests-list">
+          <!-- Pending requests -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
