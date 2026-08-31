@@ -1,0 +1,164 @@
+* { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; }
+
+body {
+  background: #121212;
+  color: #f2f2f2;
+  min-height: 100vh;
+}
+
+/* Login/Signup page */
+.container {
+  background: #1c1c1e;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  width: 320px;
+  margin: 5rem auto;
+  color: white;
+}
+
+h1 { text-align: center; font-size: 1.4rem; margin-bottom: 1rem; }
+
+.tabs { display: flex; margin-bottom: 1rem; border-radius: 8px; overflow: hidden; }
+.tab {
+  flex: 1;
+  padding: 0.6rem;
+  border: none;
+  background: #2c2c2e;
+  color: #aaa;
+  cursor: pointer;
+}
+.tab.active { background: #4a90e2; color: white; }
+
+form { display: flex; flex-direction: column; gap: 0.7rem; }
+.hidden { display: none; }
+
+input {
+  padding: 0.7rem;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #2c2c2e;
+  color: white;
+}
+input::placeholder { color: #888; }
+
+button[type="submit"] {
+  padding: 0.7rem;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.message { font-size: 0.85rem; text-align: center; color: #ff6b6b; }
+
+/* Dashboard navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 2rem;
+  background: #1c1c1e;
+}
+
+.nav-logo { font-weight: bold; font-size: 1.3rem; }
+
+.logout-btn {
+  background: #e94e4e;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Search section - Uber style */
+.search-section {
+  padding: 1.5rem 2rem;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #1c1c1e;
+  border-radius: 30px;
+  padding: 0.9rem 1.2rem;
+  max-width: 500px;
+  margin: 0 auto;
+  gap: 0.8rem;
+}
+
+.search-bar i {
+  color: #888;
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  color: white;
+  padding: 0;
+}
+
+.search-bar button {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Ride results */
+.rides-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 500px;
+  margin: 1.5rem auto;
+  padding: 0 2rem;
+}
+
+.ride-card {
+  background: #1c1c1e;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ride-card p { margin: 0; font-size: 0.95rem; color: #ddd; }
+.ride-card strong { color: white; }
+
+/* Feature cards */
+.features {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  padding: 2rem;
+  flex-wrap: wrap;
+}
+
+.feature-card {
+  background: #1c1c1e;
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 250px;
+  text-align: left;
+  transition: transform 0.2s ease;
+}
+
+.feature-card:hover { transform: translateY(-5px); }
+
+.feature-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.feature-card h3 { margin: 0.5rem 0; font-size: 1.1rem; }
+.feature-card p { font-size: 0.9rem; color: #bbb; }
+
+.dashboard-content { padding: 1rem 0; text-align: center; }
